@@ -97,13 +97,18 @@ class Printer(db.Model):
     class OfflineError(Exception):
         pass
 
-    def print_html(self, html, from_name, face='default'):
+    def print_html(self, html, from_name, face='default', template='default'):
         from sirius.coding import image_encoding
         from sirius.coding import templating
 
-        pixels = image_encoding.default_pipeline(
-            templating.default_template(html, from_name=from_name)
-        )
+        if template == "minimal":
+            pixels = image_encoding.default_pipeline(
+                templating.minimal_template(html)
+            )
+        else:
+            pixels = image_encoding.default_pipeline(
+                templating.default_template(html, from_name=from_name)
+            )
 
         self.print_pixels(pixels, from_name=from_name, face=face)
 

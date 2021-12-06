@@ -23,7 +23,8 @@ blueprint = flask.Blueprint('print_key_api', __name__)
 
 
 @blueprint.route('/printkey/<print_key_secret>', methods=['GET', 'POST'])
-def print_key(print_key_secret):
+@blueprint.route('/printkey/<print_key_secret>/<template>', methods=['GET', 'POST'])
+def print_key(print_key_secret, template='default'):
     print_key = PrintKey.query.filter(PrintKey.secret == print_key_secret).first()
     if print_key is None:
         flask.abort(404)
@@ -77,7 +78,10 @@ def print_key(print_key_secret):
             flask.abort(415)
 
         try:
-            printer.print_html(html, from_name=from_name or 'Key ' + print_key_secret[0:4])
+            if template == 'simple':
+                printer.print_html(html, from_name=from_name or 'Key ' + print_key_secret[0:4], template='minimal')
+            else:
+                printer.print_html(html, from_name=from_name or 'Key ' + print_key_secret[0:4])
         except hardware.Printer.OfflineError:
             return json.dumps({'status': 'failed-offline'}), 504, {'content-type': 'application/json'}
         
