@@ -66,8 +66,6 @@ def process_authorization(token, token_secret, screen_name, next_url):
         )
 
         # Fetch friends list from twitter. TODO: error handling.
-        friends = get_friends(new_user)
-        oauth.friends = friends
 
         db.session.add(new_user)
         db.session.add(oauth)
